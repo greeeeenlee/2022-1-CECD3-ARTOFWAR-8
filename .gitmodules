@@ -1,0 +1,3 @@
+[submodule "STT/openspeech"]
+	path = STT/openspeech
+	url = git@github.com:jieun1128/openspeech.git
