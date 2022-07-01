@@ -6,5 +6,5 @@ from core import tasks
 
 
 def my_pub_view(request):
-    tasks.add(1,2)
-    return HttpResponse(status=201)
+    result = tasks.add(1,2).get()
+    return result
