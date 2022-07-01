@@ -5,6 +5,8 @@ services:
     container_name: backend
     build:
       context: .
+    networks:
+      - app_tier
     ports:
       - "8000:8000"
     volumes:
@@ -21,6 +23,10 @@ services:
   db:
     container_name: database
     image: postgres:10-alpine
+    ports: 
+      - "5432:5432"
+    networks:
+      - app_tier
     env_file:
       - ./.env.dev
     volumes: 
@@ -29,10 +35,14 @@ services:
   redis:
     container_name: redis
     image: redis:alpine
+    networks:
+      - app_tier
 
   celery:
     container_name: celery
     restart: always
+    networks:
+      - app_tier
     build:
       context: .
     command: celery -A app worker -l info
@@ -49,6 +59,8 @@ services:
   nginx:
     container_name: nginx
     image: nginx:latest
+    networks:
+      - app_tier
     ports:
       - 80:3000
     volumes:
@@ -56,3 +68,7 @@ services:
     depends_on:
       - app
     restart: on-failure
+
+networks:
+  app_tier:
+    driver: bridge
