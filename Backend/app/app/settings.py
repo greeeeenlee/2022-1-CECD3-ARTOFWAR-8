@@ -25,7 +25,7 @@ SECRET_KEY = 'l^)6&tgav8q$#g^aj7au^b=^*l98%c#9_v^85gu!%-s$bq7%(2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -121,11 +121,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+SWAGGER_SETTINGS = {
+   'USE_SESSION_AUTH': False
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = os.path.join(BASE_DIR, 'static')
 
 # Redis and Celery Conf
 CELERY_BROKER_URL = "redis://redis:6379"
