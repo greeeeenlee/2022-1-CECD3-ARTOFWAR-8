@@ -37,7 +37,7 @@ class uploadVideo(GenericAPIView):
             file_name = default_storage.save(video.name, video)
             
             name = request.data.get('name',None)
-            upload_video.delay(file_name, name)
+            upload_video(file_name, name)
             
             # 유해 동영상 필터링 진행 및 추가 정보 업로드
 

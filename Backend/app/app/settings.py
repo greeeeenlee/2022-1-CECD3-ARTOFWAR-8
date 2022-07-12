@@ -128,8 +128,14 @@ SWAGGER_SETTINGS = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = os.path.join(BASE_DIR, 'static')
+STATIC_URL = os.path.join(BASE_DIR, 'static/')
 
 # Redis and Celery Conf
 CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+# AWS Conf
+BUCKET_NAME = os.environ.get('BUCKET_NAME')
+ACCESS_KEY = os.environ.get('ACCESS_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+BUCKET_URL = os.environ.get('BUCKET_URL')
