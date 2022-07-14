@@ -1,6 +1,6 @@
 from celery import shared_task
 from django.template import base
-from .models import Videoinfo
+from .models import Videoinfo, Userinfo
 from django.core.files.storage import default_storage
 import time
 from django.conf import settings
@@ -17,22 +17,23 @@ def add(x, y):
 def upload_video(file, name):
     basename = 'video'
     suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-    address = "_".join([basename, suffix])
+    key = "_".join([basename, suffix])
     s3 = boto3.client('s3', aws_access_key_id=settings.ACCESS_KEY,
                       aws_secret_access_key=settings.SECRET_KEY)
     try:
-        s3.upload_file(file, settings.BUCKET_NAME, address)
-        url = "/".join([settings.BUCKET_URL,address])
+        s3.upload_file(file, settings.BUCKET_NAME, key)
+        url = "/".join([settings.BUCKET_URL,key])
         
     except FileNotFoundError:
         return False
     except NoCredentialsError:
         return False
-    
-    record = Videoinfo(name=name, vdaddress=url, storage_key=address)
+
+    user = Userinfo.objects.get(uid=1)
+    record = Videoinfo(name=name, storage_key=key, storage_url=url ,uid=user)
     record.save()
     default_storage.delete(file)
-    return address
+    return True
 
 @shared_task
 def delete_video(address):
