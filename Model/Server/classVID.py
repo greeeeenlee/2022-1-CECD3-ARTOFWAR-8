@@ -1,10 +1,11 @@
-from keras.models import load_model
+import tensorflow
+from tensorflow.keras.models import load_model
 import numpy as np
-from keras.preprocessing import image
+from tensorflow.keras.preprocessing import image
 import cv2  
 import boto3
 import os
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 model = load_model('../image_classification/image_classification.h5') #유해성 판별 모델 경로
 
 #동영상의 유해성 판별 함수
