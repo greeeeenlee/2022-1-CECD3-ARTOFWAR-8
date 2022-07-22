@@ -20,8 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = os.environ.get('SECRET_KEY')
-SECRET_KEY = 'l^)6&tgav8q$#g^aj7au^b=^*l98%c#9_v^85gu!%-s$bq7%(2'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -133,14 +132,25 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = os.path.join(BASE_DIR, 'static/')
 
 # Redis and Celery Conf
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
+CELERY_BROKER_URL = "redis://redis_for_broker:6379"
+CELERY_RESULT_BACKEND = "redis://redis_for_broker:6379"
 
 # AWS Conf
 BUCKET_NAME = os.environ.get('BUCKET_NAME')
 ACCESS_KEY = os.environ.get('ACCESS_KEY')
 SECRET_KEY = os.environ.get('SECRET_KEY')
 BUCKET_URL = os.environ.get('BUCKET_URL')
+
+# session
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS = {
+    'host': 'redis_for_session',
+    'port': 6379,
+    'db': 0,
+    'prefix': 'session',
+    'socket_timeout': 1,
+    'retry_on_timeout': False
+    }
 
 ##CORS
 CORS_ORIGIN_ALLOW_ALL=True
@@ -166,5 +176,5 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
-ALGORITHM='HS256'
-# ALGORITHM = os.environ.get('ALGORITHM')
+
+ALGORITHM = os.environ.get('ALGORITHM')
