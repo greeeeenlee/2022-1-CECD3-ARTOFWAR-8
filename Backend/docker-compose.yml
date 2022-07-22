@@ -16,9 +16,14 @@ services:
     env_file:
       - ./.env.dev
 
+  redis1:
+    container_name: redis_for_session
+    image: redis:alpine
+    networks:
+      - app_tier
 
-  redis:
-    container_name: redis
+  redis2:
+    container_name: redis_for_broker
     image: redis:alpine
     networks:
       - app_tier
@@ -36,7 +41,7 @@ services:
     env_file:
       - ./.env.dev
     depends_on:
-      - redis
+      - redis2
       - app
   
   # web server

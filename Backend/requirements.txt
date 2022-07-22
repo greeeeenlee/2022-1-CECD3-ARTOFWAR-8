@@ -10,3 +10,4 @@ awscli
 bcrypt
 PyJWT
 django-cors-headers
+django-redis-sessions
