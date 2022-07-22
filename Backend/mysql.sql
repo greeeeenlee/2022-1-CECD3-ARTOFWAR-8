@@ -1,7 +1,7 @@
 CREATE TABLE `userInfo` (
   `id` VARCHAR(45) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
   `uid` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`uid`));
 
@@ -17,7 +17,7 @@ CREATE TABLE `videoInfo` (
   `storage_url` VARCHAR(100) NULL,
   `upload_time` TIMESTAMP NOT NULL DEFAULT current_timestamp,
   `uid` INT NOT NULL,
-  PRIMARY KEY (`video_id`),
+  PRIMARY KEY (`vid`),
   FOREIGN KEY (`uid`) REFERENCES `userInfo` (`uid`)
 )
 
