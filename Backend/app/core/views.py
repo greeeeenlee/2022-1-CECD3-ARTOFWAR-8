@@ -3,11 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .serializer import videoSerializer
+from .serializer import videoSerializer, loginSerializer, signUpSerializer
 from rest_framework.generics import GenericAPIView
 from rest_framework import parsers, renderers, serializers, status
 from django.core.files.storage import default_storage
-import random
+from django.conf import settings
+from .models import Userinfo
+import json, bcrypt, jwt, re
 from datetime import datetime
 # Create your views here.
 
@@ -47,4 +49,55 @@ class uploadVideo(GenericAPIView):
         
         return HttpResponse(status=200)
 
+class signUp(APIView):
+    @swagger_auto_schema(tags=["회원 가입"],
+                         request_body=signUpSerializer,
+                         responses={
+                             200: "성공",
+                             403: '인증에러',
+                             400: '입력값 유효성 검증 실패',
+                             500: '서버에러'
+                         })
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            ID = data['ID']
+            pwd = data['pwd']
+            name = data['name']
+            if Userinfo.objects.filter(ID=ID).exists():
+                return JsonResponse({'message' : 'ALREADY_EXISTS'}, status=400)
+            regex_pwd = '\S{8,25}'
+            if not re.match(regex_pwd, pwd):
+                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status=400)
+            pwd = data['pwd'].encode('utf-8')
+            pwd_crypt = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
+            
+            Userinfo.objects.create(ID=ID, name=name, password=pwd_crypt)
+            return JsonResponse({'message' : 'SUCCESS'}, status=201)
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
+class login(APIView):
+    @swagger_auto_schema(tags=["로그인"],
+                         request_body=loginSerializer,
+                         responses={
+                             200: "성공",
+                             403: '인증에러',
+                             400: '입력값 유효성 검증 실패',
+                             500: '서버에러'
+                         })
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            user = Userinfo.objects.get(ID = data['ID'])
+            if not bcrypt.checkpw(data['pwd'].encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status=400)
+            
+            token = jwt.encode({'password' : data['pwd']}, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+            return JsonResponse({'message' : 'SUCCESS', 'access_token': token.encode().decode()}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+        except user.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
 

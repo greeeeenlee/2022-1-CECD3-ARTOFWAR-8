@@ -7,3 +7,6 @@ drf-yasg
 djangorestframework
 boto3
 awscli
+bcrypt
+PyJWT
+django-cors-headers

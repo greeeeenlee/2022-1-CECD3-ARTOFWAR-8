@@ -14,9 +14,9 @@ class Inquire(models.Model):
 
 
 class Userinfo(models.Model):
-    id = models.CharField(max_length=45)
+    ID = models.CharField(max_length=45)
     name = models.CharField(max_length=45)
-    password = models.CharField(max_length=45)
+    password = models.CharField(max_length=100)
     uid = models.AutoField(primary_key=True)
 
     class Meta:
