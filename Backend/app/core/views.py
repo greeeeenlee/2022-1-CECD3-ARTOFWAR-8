@@ -8,7 +8,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from .models import Userinfo
 import json, bcrypt, jwt, re
-from .tasks import add, upload_video
+from .tasks import add, upload_video,classify_video,analysis_video
 
 
 class my_pub_view(APIView):
@@ -27,6 +27,7 @@ class uploadVideo(GenericAPIView):
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.FileUploadParser)
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = videoSerializer
+    
     def post(self, request):
         try:
             # 입력된 동영상과 정보 업로드
@@ -34,10 +35,11 @@ class uploadVideo(GenericAPIView):
             file_name = default_storage.save(video.name, video)
             
             name = request.data.get('name',None)
-            upload_video(file_name, name)
+            storage_key=upload_video(file_name, name)
             
             # 유해 동영상 필터링 진행 및 추가 정보 업로드
-
+            classify_video(storage_key)
+            analysis_video(storage_key)
 
         except:
             return HttpResponse(status=400)
