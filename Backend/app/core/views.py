@@ -9,6 +9,7 @@ from django.conf import settings
 from .models import Userinfo
 import json, bcrypt, jwt, re
 from .tasks import add, upload_video,classify_video,analysis_video
+from .getInfo import getUserInfo, getVideoInfo
 
 
 class my_pub_view(APIView):
@@ -129,3 +130,19 @@ class user(APIView):
         pwd_crypt = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
         Userinfo.objects.filter(ID = request.session['userID']).update(password=pwd_crypt)
         return JsonResponse({'message' : 'SUCCESS'}, status=200)
+
+class videoInfo(APIView):
+    @swagger_auto_schema(tags=["동영상 정보 요청"],
+                         responses={
+                             200: '성공',
+                             403: 'Key Error',
+                             500: '서버에러'
+                         })
+    def get(self, request, vid):
+        try:
+            userID = request.session['userID']
+            result = getVideoInfo(userID, vid)
+            return JsonResponse(result, status=200)
+
+        except Userinfo.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
