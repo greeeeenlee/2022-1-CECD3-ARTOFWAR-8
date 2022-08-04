@@ -8,7 +8,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from .models import Userinfo
 import json, bcrypt, jwt, re
-from .tasks import add, upload_video,classify_video,analysis_video
+from .tasks import add, store_video, upload_video,classify_video,analysis_video,store_video
 from .getInfo import getUserInfo, getVideoInfo
 
 
@@ -28,7 +28,15 @@ class uploadVideo(GenericAPIView):
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.FileUploadParser)
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = videoSerializer
-    
+    @swagger_auto_schema(tags=["동영상 업로드"],
+                         request_body=videoSerializer,
+                         responses={
+                             200: '성공',
+                             400: '실패',
+                             401: '이미지 유해 판별 실패',
+                             402: 'STT 변환 및 키워드 추출 실패',
+                             500: '서버에러'
+                         })
     def post(self, request):
         try:
             # 입력된 동영상과 정보 업로드
@@ -36,15 +44,20 @@ class uploadVideo(GenericAPIView):
             file_name = default_storage.save(video.name, video)
             
             name = request.data.get('name',None)
-            storage_key=upload_video(file_name, name)
-            
-            # 유해 동영상 필터링 진행 및 추가 정보 업로드
-            classify_video(storage_key)
-            analysis_video(storage_key)
+            main_category = request.data.get('Main Category',None)
+            sub_category = request.data.get('Sub Category',None)
+            storage_key=upload_video(video, name)
+            vid=store_video(storage_key,name,main_category,sub_category)
 
+            # 유해 동영상 필터링 진행
+            if classify_video(storage_key,vid):
+                return JsonResponse({'message' : 'classify_error'}, status=401)
+            # 동영상 STT 변환 -> 유해 단어 필터링 + 키워드 추출 
+            if analysis_video(storage_key,vid):
+                return JsonResponse({'message' : 'analysis_error'}, status=402)
+            default_storage.delete(file_name)
         except:
             return HttpResponse(status=400)
-        
         return HttpResponse(status=200)
 
 class signUp(APIView):
