@@ -15,26 +15,29 @@ def add(x, y):
     return x + y
 
 @shared_task
-def upload_video(file, name):
+def upload_video(file):
     basename = 'video'
     suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
     address = "_".join([basename, suffix])
     s3 = boto3.client('s3', aws_access_key_id=settings.ACCESS_KEY,
                       aws_secret_access_key=settings.SECRET_KEY)
     try:
-        s3.upload_file(file, settings.BUCKET_NAME, address)
-        url = "/".join([settings.BUCKET_URL,address])
-        
+        s3.upload_file(file, settings.BUCKET_NAME, address)        
     except FileNotFoundError:
         return False
     except NoCredentialsError:
         return False
-    
-    #record = Videoinfo(name=name, vdaddress=url, storage_key=address)
-    record = Videoinfo(name=name, storage_url=url, storage_key=address)
-    record.save()
-    default_storage.delete(file)
+
     return address
+
+@shared_task
+def store_video(address,name,main_category,sub_category):
+    #record = Videoinfo(name=name, vdaddress=url, storage_key=address)
+    url = "/".join([settings.BUCKET_URL,address])
+    record = Videoinfo(name=name, storage_url=url, storage_key=address,mjclass=main_category,subclass=sub_category)
+    record.save()
+    return record.get_vid()
+
 
 @shared_task
 def delete_video(address):
@@ -50,11 +53,11 @@ def delete_video(address):
 
 
 @shared_task
-def classify_video(storage_key):
+def classify_video(storage_key,vid):
     try:
-        response = requests.post('http://50.18.106.22:5000/classify', data=storage_key)
-        record = Videoinfo.objects.filter(name__contains=storage_key)
-        record.updateStatus(response)
+        response = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key})
+        record = Videoinfo.objects.get(pk=vid)
+        record.status=response
         record.save()
         return True
     except FileNotFoundError:
@@ -63,13 +66,13 @@ def classify_video(storage_key):
         return False
 
 @shared_task
-def analysis_video(storage_key):
+def analysis_video(storage_key,vid):
     try:
-        response = requests.post('http://44.196.228.195:5000/analysis', data=storage_key)
+        response = requests.post('http://44.196.228.195:5000/analysis', data={'title':storage_key})
         response.json() # json response일 경우 딕셔너리 타입으로 바로 변환
         status=response['harmful']
-        record = Videoinfo.objects.filter(name__contains=storage_key)
-        record.updateStatus(status)
+        record = Videoinfo.objects.get(pk=vid)
+        record.status=status
         record.save()
         
         keywords=response['keywords']
@@ -85,3 +88,4 @@ def analysis_video(storage_key):
         return False
     except response.raise_for_status():# 200 OK 코드가 아닌 경우 에러 발동
         return False
+
