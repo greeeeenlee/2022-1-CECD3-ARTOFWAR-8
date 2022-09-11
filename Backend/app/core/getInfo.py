@@ -8,7 +8,7 @@ def getUserInfo(userID):
 
     return result
 
-def getVideoInfo(userID, videoID):
+def getVideoInfo(videoID):
     video = Videoinfo.objects.get(vid = videoID)
     result = {}
     result['name'] = video.name
@@ -20,6 +20,19 @@ def getVideoInfo(userID, videoID):
     result['storage_url'] = video.storage_url
 
     return result
+
+def getVideoAddress(videoID):
+    video = Videoinfo.objects.get(vid = videoID)
+    result = video.storage_key
+
+    return result
+
+def updateVideoInfo(vid, data):
+    video = Videoinfo.objects.filter(vid = vid)
+    video.update(
+        name=data['name'],
+        introduction=data['introduction']
+    )
 
 
 

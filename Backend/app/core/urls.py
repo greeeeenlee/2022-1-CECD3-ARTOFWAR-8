@@ -1,13 +1,19 @@
-from django.urls import path
-
+from django.urls import path ,include
+from django.contrib import admin
 from core import views
 
 app_name = 'api'
 
 urlpatterns = [
-    path('publish', views.my_pub_view.as_view(), name='publish'),
+    path('publish/', views.my_pub_view.as_view(), name='publish'),
+    path('sign', views.signUp.as_view(), name='signUp'),
+    path('sign/<uid>', views.checkID.as_view(), name='checkID'),
     path('upload', views.uploadVideo.as_view(), name='uploadVideo'),
-    path('signup', views.signUp.as_view(), name='signUp'),
     path('user', views.user.as_view(), name='userFunction'),
-    path('videoInfo/<vid>', views.videoInfo.as_view(), name='getVideoInfo')
+    path('userInfo/<uid>', views.userInfo.as_view(), name='userInfo'),
+    path('videoInfo/<vid>', views.videoInfo.as_view(), name='getVideoInfo'),
+    path('deleteVideo/<vid>', views.deleteVideo.as_view(), name='deleteVideo'),
+    path('createInquire', views.createInquire.as_view(), name='createInquire'),
+    path('inquireUser/<qid>', views.inquireUser.as_view(), name='inquireUser'),
+    path('inquireAdmin/<qid>', views.inquireAdmin.as_view(), name='inquireAdmin'),
 ]

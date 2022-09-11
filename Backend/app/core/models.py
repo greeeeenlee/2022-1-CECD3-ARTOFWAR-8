@@ -1,15 +1,16 @@
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.utils import timezone
 class Inquire(models.Model):
     qid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     content = models.CharField(max_length=300, blank=True, null=True)
-    vid = models.ForeignKey('Videoinfo', models.DO_NOTHING, db_column='vid')
-    uid = models.ForeignKey('Userinfo', models.DO_NOTHING, db_column='uid')
+    vid = models.ForeignKey('videoInfo', models.DO_NOTHING, db_column='vid')
+    uid = models.ForeignKey('userInfo', models.DO_NOTHING, db_column='uid')
     question = models.CharField(max_length=300, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'inquire'
 
 
@@ -18,11 +19,12 @@ class Userinfo(models.Model):
     name = models.CharField(max_length=45)
     password = models.CharField(max_length=100)
     uid = models.AutoField(primary_key=True)
+    is_authenticated = models.BooleanField(default=True) 
+    is_staff = models.BooleanField(default=False)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'userInfo'
-
 
 class Videoinfo(models.Model):
     vid = models.AutoField(primary_key=True)
@@ -33,8 +35,11 @@ class Videoinfo(models.Model):
     introduction = models.CharField(max_length=45, blank=True, null=True)
     storage_key = models.CharField(max_length=45, blank=True, null=True)
     storage_url = models.CharField(max_length=45, blank=True, null=True)
-    uid = models.ForeignKey(Userinfo, models.DO_NOTHING, db_column='uid')
+    uid = models.ForeignKey('userInfo', models.DO_NOTHING, db_column='uid')
+
+    def get_vid(self):
+        return self.vid
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'videoInfo'
