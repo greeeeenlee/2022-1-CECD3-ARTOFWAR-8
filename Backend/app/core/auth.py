@@ -5,7 +5,7 @@ from django.conf import settings
 
 def generate_access_token(user):
     access_token_payload = {
-        'user_id': user.ID,
+        'uid': user.uid,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(
             days=0, minutes=60
         ),
@@ -22,7 +22,7 @@ def generate_access_token(user):
     
 def generate_refresh_token(user):
     refresh_token_payload = {
-        'user_id': user.ID,
+        'uid': user.uid,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
         'iat': datetime.datetime.utcnow(),
     }
@@ -53,4 +53,4 @@ def jwt_id(request):
     access_token = authorization_header.split(' ')[1]
     payload = jwt.decode(access_token, settings.SECRET_KEY, algorithms=settings.ALGORITHM)
     
-    return payload['user_id']
+    return payload['uid']

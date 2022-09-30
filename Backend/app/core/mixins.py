@@ -1,6 +1,6 @@
 from rest_framework.permissions import IsAuthenticated
 
-from .authenticate import JWTAuthentication
+from .authenticate import JWTAuthentication,AdministratorAuthentication
 
 
 class ApiAuthMixin:
@@ -8,8 +8,7 @@ class ApiAuthMixin:
     permission_classes = (IsAuthenticated, )
 
 class SuperUserMixin:
-    #authentication_classes = (AdministratorAuthentication, )
-    authentication_classes = ()
+    authentication_classes = (AdministratorAuthentication, )
     permission_classes = (IsAuthenticated, )
 
 class PublicApiMixin:
