@@ -1,7 +1,7 @@
 from .models import Userinfo, Videoinfo,Inquire
 
 def inquireVideo(uid,userInquire):
-    user=Userinfo.objects.get(ID=uid) 
+    user=Userinfo.objects.get(uid=uid) 
     video=Videoinfo.objects.get(vid=userInquire['vid']) 
     Inquire.objects.create(name=userInquire['name'], content=userInquire['content'], vid=video,uid=user)
 
@@ -15,8 +15,12 @@ def getInquireInfo(qid):
     return result
 
 def updateInquire(qid,data):
-    record = Inquire.objects.filter(qid = qid)
-    record.update(
+    inquire = Inquire.objects.get(qid = qid)
+    inquire.update(
                 name=data['name'],
                 content=data['content']
             )
+
+def nullQuestion():
+    nullq=Inquire.objects.filter(question__isnull=True)
+    return nullq.count()

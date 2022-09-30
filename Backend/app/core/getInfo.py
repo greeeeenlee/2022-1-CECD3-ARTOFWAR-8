@@ -1,7 +1,7 @@
 from .models import Userinfo, Videoinfo
 
 def getUserInfo(userID):
-    user = Userinfo.objects.get(ID = userID)
+    user = Userinfo.objects.get(uid = userID)
     result = {}
     result['name'] = user['name']
     result['id'] = user['id']
@@ -34,6 +34,6 @@ def updateVideoInfo(vid, data):
         introduction=data['introduction']
     )
 
-
-
-
+def getVideoNum(userID):
+    qs = Videoinfo.objects.filter(uid=userID)
+    return qs.count()

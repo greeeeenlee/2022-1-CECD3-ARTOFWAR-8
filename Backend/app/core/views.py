@@ -19,7 +19,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
-from .mixins import PublicApiMixin,ApiAuthMixin
+from .mixins import *
 from .auth import jwt_login,jwt_id
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
@@ -241,6 +241,37 @@ class videoInfo(ApiAuthMixin,APIView):
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class userMain(ApiAuthMixin,APIView):
+    @swagger_auto_schema(tags=["유저 별 동영상 개수"],
+                         responses={
+                             200: '성공',
+                             403: 'Key Error',
+                             500: '서버에러'
+                         })
+    def get(self, request):
+        try:
+            userID = jwt_id(request)
+            result = getVideoNum(userID)
+            return JsonResponse({'count' : result}, status=200)
+        except Userinfo.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
+
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class adminMain(SuperUserMixin,APIView):
+    @swagger_auto_schema(tags=["답변하지않은 문의 개수"],
+                         responses={
+                             200: '성공',
+                             403: 'Key Error',
+                             500: '서버에러'
+                         })
+    def get(self, request):
+        try:
+            result = nullQuestion()
+            return JsonResponse({'count' : result}, status=200)
+        except Userinfo.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_USER'}, status=401)
+
 class deleteVideo(PublicApiMixin, APIView):
     @swagger_auto_schema(tags=["동영상 삭제 요청"],
                          responses={
@@ -304,7 +335,7 @@ class inquireUser(ApiAuthMixin,APIView):
             return JsonResponse({'message' : 'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
-class inquireAdmin(ApiAuthMixin, APIView):
+class inquireAdmin(SuperUserMixin, APIView):
     @swagger_auto_schema(tags=["문의 내용 답변"],
                          request_body=inquireVideoSerializer,
                          responses={
