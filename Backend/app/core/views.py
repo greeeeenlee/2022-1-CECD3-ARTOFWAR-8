@@ -60,6 +60,7 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
                          })
     def post(self, request):
         try: 
+<<<<<<< HEAD
             info={}
             info['uid']=jwt_id(request)
             # 전달받은 동영상 정보 저장
@@ -78,6 +79,31 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
             #if analysis_vidseo(address,vid)==False:
                 #return JsonResponse({'message' : 'fail analysis video'}, status=402)                  
  
+=======
+            uid=jwt_id(request)
+            # 입력된 동영상과 정보 업로드
+            video = request.data.get('videoFile',None)
+            file_name = default_storage.save(video.name, video)
+            image=request.data.get('imageFile',None)
+            if image != None:
+                image_file_name = default_storage.save(image.name, image)
+            else:
+                image_file_name='None'
+
+            name = request.data.get('name',None)
+            mjclass = request.data.get('mjclass',None)
+            subclass = request.data.get('subclass',None)
+
+            address=upload_video(image_file_name,file_name)
+            vid=store_video(address,name,mjclass,subclass, uid)            
+            # 유해 동영상 필터링 진행 및 추가 정보 업로드
+            if classify_video(address,vid,image_file_name)==False:
+                return JsonResponse({'message' : 'fail classify video'}, status=401)
+            #if analysis_video(address,vid)==False:
+                #return JsonResponse({'message' : 'fail analysis video'}, status=402)                  
+            default_storage.delete(file_name)
+            default_storage.delete(image_file_name)
+>>>>>>> 706eea96ab53df93094cc8f0fc440e9527d2d5a4
         except:
             return JsonResponse({'message' : 'fail'}, status=400)
         
