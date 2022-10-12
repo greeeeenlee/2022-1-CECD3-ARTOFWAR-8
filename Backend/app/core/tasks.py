@@ -10,30 +10,8 @@ import datetime
 import requests
 
 @shared_task
-<<<<<<< HEAD
 def store_video(info):
     user=Userinfo.objects.get(uid=info['uid']) 
-=======
-def upload_video(image, file):
-    basename = 'video'
-    suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-    address = "_".join([basename, suffix])
-    s3 = boto3.client('s3', aws_access_key_id=settings.ACCESS_KEY,
-                      aws_secret_access_key=settings.SECRET_KEY)
-    v_ext = os.path.splitext(file)[1]
-    try:
-        s3.upload_file(file, settings.BUCKET_NAME, address+v_ext)
-        if image!='None':
-            s3.upload_file(image, settings.BUCKET_NAME, 'image_'+address+'.jpeg',ExtraArgs={'ContentType': "image/jpeg"})
-
-        return address+v_ext
-    except FileNotFoundError:
-        return False
-
-@shared_task
-def store_video(address,name,main_category,sub_category,uid):
-    user=Userinfo.objects.get(uid=uid) 
->>>>>>> 706eea96ab53df93094cc8f0fc440e9527d2d5a4
     url = "/".join([settings.BUCKET_URL,address])
     Videoinfo.objects.create(name=info['name'], storage_url=info['url'], storage_key=info['address'],
             mjclass=info['mjclass'],subclass=info['subclass'],uid=user)
