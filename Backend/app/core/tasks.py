@@ -10,29 +10,12 @@ import datetime
 import requests
 
 @shared_task
-def upload_video(image, file):
-    basename = 'video'
-    suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-    address = "_".join([basename, suffix])
-    s3 = boto3.client('s3', aws_access_key_id=settings.ACCESS_KEY,
-                      aws_secret_access_key=settings.SECRET_KEY)
-    v_ext = os.path.splitext(file)[1]
-    try:
-        s3.upload_file(file, settings.BUCKET_NAME, address+v_ext)
-        if image!='None':
-            s3.upload_file(image, settings.BUCKET_NAME, 'image_'+address+'.jpeg',ExtraArgs={'ContentType': "image/jpeg"})
-
-        return address+v_ext
-    except FileNotFoundError:
-        return False
-
-@shared_task
-def store_video(address,name,main_category,sub_category,uid):
-    user=Userinfo.objects.get(uid=uid) 
-    url = "/".join([settings.BUCKET_URL,address])
-    Videoinfo.objects.create(name=name, storage_url=url, storage_key=address,
-            mjclass=main_category,subclass=sub_category,uid=user)
-    video=Videoinfo.objects.get(storage_key=address)
+def store_video(info):
+    user=Userinfo.objects.get(uid=info['uid']) 
+    url = "/".join([settings.BUCKET_URL,info['address']])
+    Videoinfo.objects.create(name=info['name'], storage_url=url, storage_key=info['address'],
+            mjclass=info['mjclass'],subclass=info['subclass'],image=info['image'],uid=user)
+    video=Videoinfo.objects.get(storage_key=info['address'])
     return video.get_vid()
 
 @shared_task
@@ -49,13 +32,13 @@ def delete_s3_video(address):
 
 
 @shared_task
-def classify_video(storage_key,vid,image_file_name):
+def classify_video(storage_key,image):
     try:
-        if image_file_name=='None':
-            data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':'None'}).json()
-        else:
+        if image==1:
             data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':''}).json()
-        video = Videoinfo.objects.filter(vid=vid)
+        else:
+            data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':'None'}).json()
+        video = Videoinfo.objects.filter(storage_key=storage_key)
         video.update(
             status=int(data['status'])
         )

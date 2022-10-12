@@ -32,6 +32,7 @@ class Videoinfo(models.Model):
     mjclass = models.CharField(max_length=45, blank=True, null=True)
     subclass = models.CharField(max_length=45, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
+    image = models.IntegerField(blank=True, null=True)
     introduction = models.CharField(max_length=45, blank=True, null=True)
     storage_key = models.CharField(max_length=45, blank=True, null=True)
     storage_url = models.CharField(max_length=45, blank=True, null=True)
