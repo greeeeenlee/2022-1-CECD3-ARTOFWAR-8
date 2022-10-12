@@ -32,7 +32,7 @@ class Admin_InquireActivity : AppCompatActivity() {
 
         //비디오 시청하기 버튼을 클릭하는 경우
         bt_video.setOnClickListener {
-            //TODO : 비디오 시청하기 연결
+            //TODO : 비디오 시청하기 연결-s3연동 완료
             val awsCredentials= BasicAWSCredentials("accessKey","secretKey")
             val s3Client= AmazonS3Client(awsCredentials, Region.getRegion(Regions.US_WEST_1))
 
