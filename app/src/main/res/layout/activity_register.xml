@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.RegisterActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/orange_origin"
+        app:title="회원가입하기"
+        app:titleTextColor="@color/white"
+       />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원가입하기"
+            android:textSize="20dp"
+            android:layout_marginTop="18dp"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="*는 필수항목입니다."
+            android:textSize="10dp"
+            android:gravity="right"
+            />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="*아이디"
+            android:layout_marginTop="20dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_id1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:theme="@style/EditTextStyle">
+
+                <EditText
+                    android:id="@+id/et_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="아이디를 입력하세요."
+                    android:minHeight="48dp" />
+                <Button
+                    android:id="@+id/bt_id_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="중복체크"
+                    android:background="@drawable/layout_bt_fill_orange_2"
+                    android:textColor="@color/white"
+                    android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_info_id"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="12dp"
+            android:textColor="@color/red"
+            android:text="아이디 중복체크를 진행해주세요."/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="*비밀번호"
+            android:layout_marginTop="20dp"/>
+
+
+        <EditText
+            android:id="@+id/et_pw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="비밀번호를 입력하세요.(8-24자리)"
+            android:minHeight="48dp"
+            android:theme="@style/EditTextStyle" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="*비밀번호 확인"
+            android:layout_marginTop="20dp"/>
+
+
+        <EditText
+            android:id="@+id/et_pw2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="비밀번호를 다시 입력하세요."
+            android:minHeight="48dp"
+            android:theme="@style/EditTextStyle"/>
+
+        <TextView
+            android:id="@+id/tv_info_pw"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="12dp"
+            android:textColor="@color/red"
+            android:text="비밀번호가 다릅니다. 같은 비밀번호를 입력하세요."/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="*이름"
+            android:layout_marginTop="20dp"/>
+
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="이름을 입력하세요."
+            android:minHeight="48dp"
+            android:theme="@style/EditTextStyle"
+            android:privateImeOptions="defaultInputmode=korean"/>
+
+        <LinearLayout
+            android:id="@+id/ll_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+            <Button
+                android:id="@+id/bt_cancel"
+                android:layout_width="123dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="15dp"
+                android:text="취소"
+                android:textColor="@color/black"
+                android:background="@drawable/layout_bt_stroke_orange"
+                />
+
+            <Button
+                android:id="@+id/bt_register"
+                android:layout_width="123dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:text="회원가입하기"
+                android:textColor="@color/white"
+                android:background="@drawable/layout_bt_fill_orange_2"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="결과값"
+            android:textSize="15dp"
+            android:gravity="center"
+            android:layout_marginTop="25dp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

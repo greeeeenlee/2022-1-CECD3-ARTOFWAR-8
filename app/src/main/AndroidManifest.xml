@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.artofwar">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera"/>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Artofwar"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true" />
+        <activity
+            android:name=".activity.Admin_InquireListActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".activity.InquireDetailActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".activity.InquireListActivity"
+            android:exported="true">
+
+
+        </activity>
+        <activity
+            android:name=".activity.VideoListActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.Admin_InquireDoneActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.Admin_InquireActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.Admin_MainActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.VideoInquireDoneActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.VideoInquireActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.VideoEditActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.VideoDetailActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.UploadActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.UploadDoneActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.CategoryActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.EditDoneActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.EditActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.RegisterDoneActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activity.IntroActivity"
+            android:exported="true" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:exported="true" >
+
+        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:exported="true" >
+
+        </activity>
+
+    </application>
+
+</manifest>
