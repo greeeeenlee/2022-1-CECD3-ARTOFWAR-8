@@ -73,13 +73,11 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
                 info['image']=0
             vid=store_video(info)     #동영상 정보 mysql 저장       
             # 유해 동영상 필터링 진행 및 추가 정보 업로드
-            if classify_video(info['address'],info['image'])==False:
-                return JsonResponse({'message' : 'fail classify video'}, status=401)
+            #if classify_video(info['address'],info['image'])==False:
+                #return JsonResponse({'message' : 'fail classify video'}, status=401)
             #if analysis_vidseo(address,vid)==False:
                 #return JsonResponse({'message' : 'fail analysis video'}, status=402)                  
-            #default_storage.delete(file_name)
-            #if image_file_name != 'None':
-                #default_storage.delete(image_file_name)
+ 
         except:
             return JsonResponse({'message' : 'fail'}, status=400)
         

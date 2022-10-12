@@ -12,10 +12,10 @@ import requests
 @shared_task
 def store_video(info):
     user=Userinfo.objects.get(uid=info['uid']) 
-    url = "/".join([settings.BUCKET_URL,info['address']])
-    Videoinfo.objects.create(name=info['name'], storage_url=url, storage_key=info['address'],
-            mjclass=info['mjclass'],subclass=info['subclass'],image=info['image'],uid=user)
-    video=Videoinfo.objects.get(storage_key=info['address'])
+    url = "/".join([settings.BUCKET_URL,address])
+    Videoinfo.objects.create(name=info['name'], storage_url=info['url'], storage_key=info['address'],
+            mjclass=info['mjclass'],subclass=info['subclass'],uid=user)
+    video=Videoinfo.objects.get(storage_key=address)
     return video.get_vid()
 
 @shared_task
@@ -34,10 +34,10 @@ def delete_s3_video(address):
 @shared_task
 def classify_video(storage_key,image):
     try:
-        if image==1:
-            data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':''}).json()
-        else:
+        if image==0:
             data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':'None'}).json()
+        else:
+            data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':''}).json()
         video = Videoinfo.objects.filter(storage_key=storage_key)
         video.update(
             status=int(data['status'])
@@ -69,4 +69,3 @@ def analysis_video(storage_key,vid):
         return False
     except response.raise_for_status():# 200 OK 코드가 아닌 경우 에러 발동
         return False
-
