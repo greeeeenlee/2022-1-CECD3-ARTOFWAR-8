@@ -32,7 +32,6 @@ def delete_s3_video(address):
 
 
 @shared_task
-<<<<<<< HEAD
 def classify_video(storage_key,image):
     try:
         if image==0:
@@ -40,15 +39,6 @@ def classify_video(storage_key,image):
         else:
             data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':''}).json()
         video = Videoinfo.objects.filter(storage_key=storage_key)
-=======
-def classify_video(storage_key,vid,image_file_name):
-    try:
-        if image_file_name=='None':
-            data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':'None'}).json()
-        else:
-            data = requests.post('http://172.31.11.209:5000/classify', data={'title':storage_key,'image':''}).json()
-        video = Videoinfo.objects.filter(vid=vid)
->>>>>>> 706eea96ab53df93094cc8f0fc440e9527d2d5a4
         video.update(
             status=int(data['status'])
         )
