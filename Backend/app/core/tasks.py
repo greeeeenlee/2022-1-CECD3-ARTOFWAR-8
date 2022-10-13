@@ -13,9 +13,9 @@ import requests
 def store_video(info):
     user=Userinfo.objects.get(uid=info['uid']) 
     url = "/".join([settings.BUCKET_URL,address])
-    Videoinfo.objects.create(name=info['name'], storage_url=info['url'], storage_key=info['address'],
+    Videoinfo.objects.create(name=info['name'], storage_url=url, image=info['image'],storage_key=info['address'],
             mjclass=info['mjclass'],subclass=info['subclass'],uid=user)
-    video=Videoinfo.objects.get(storage_key=address)
+    video=Videoinfo.objects.get(storage_key=info['address'])
     return video.get_vid()
 
 @shared_task
