@@ -8,8 +8,10 @@ api = Api(app)  # Flask 객체에 Api 객체 등록
 #동영상 유해성 판별 api
 @app.route('/classify',methods=['POST'])
 def classify():
-    video_title=request.form['title'] #동영상 제목 추출
-    result = predictVid(video_title) #해당 동영상 유해성 판별
+    video_title=request.form.get('title') #동영상 제목 추출
+    image=request.form.get('image') #동영상 이미지 여부
+
+    result = predictVid(video_title,image) #해당 동영상 유해성 판별
     return str(result) #유해성 결과 반환
 
 if __name__=='__main__':
