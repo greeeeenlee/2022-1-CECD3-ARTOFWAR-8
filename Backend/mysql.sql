@@ -12,6 +12,7 @@ CREATE TABLE `videoInfo` (
   `mjclass` VARCHAR(45) NULL,
   `subclass` VARCHAR(45) NULL,
   `status` INT NULL DEFAULT 0,
+  `image` INT NULL DEFAULT 0,
   `introduction` VARCHAR(500) NULL,
   `storage_key` VARCHAR(45) NULL,
   `storage_url` VARCHAR(100) NULL,
