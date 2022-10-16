@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    #'django_celery_beat',
+    #'django_celery_results',
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
@@ -52,6 +54,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'core.authenticate.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 
@@ -166,6 +170,19 @@ STATIC_URL = os.path.join(BASE_DIR, 'static/')
 # Redis and Celery Conf
 CELERY_BROKER_URL = "redis://redis_for_broker:6379"
 CELERY_RESULT_BACKEND = "redis://redis_for_broker:6379"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis_for_broker:6379',  # redis_server: docker container이름
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 # AWS Conf
 BUCKET_NAME = os.environ.get('BUCKET_NAME')
