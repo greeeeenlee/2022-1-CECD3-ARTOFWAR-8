@@ -70,7 +70,6 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
             classify_video.delay(info['address'],info['image'])   
             #analysis_video.delay(info['address'])                  
             return JsonResponse({'message' : 'SUCCESS'}, status=200)
-        
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class signUp(PublicApiMixin,APIView):
