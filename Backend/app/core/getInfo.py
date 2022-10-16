@@ -3,8 +3,8 @@ from .models import Userinfo, Videoinfo
 def getUserInfo(userID):
     user = Userinfo.objects.get(uid = userID)
     result = {}
-    result['name'] = user['name']
-    result['id'] = user['id']
+    result['name'] = user.name
+    result['id'] = user.ID
 
     return result
 
@@ -20,6 +20,26 @@ def getVideoInfo(videoID):
     result['storage_url'] = video.storage_url
 
     return result
+
+def getVideoList(userID):
+    video = Videoinfo.objects.filter(uid = userID)
+
+    resultList = {}
+    count=0
+    for i in video:
+        result={}
+        result['name'] = i.name
+        result['upload_time'] = i.upload_time
+        result['mjclass'] = i.mjclass
+        result['subclass'] = i.subclass
+        result['status'] = i.status
+        result['introduction'] = i.introduction
+        result['storage_key'] = i.storage_key
+        resultList[count]=(result)
+        count+=1
+
+    return resultList
+
 
 def getVideoAddress(videoID):
     video = Videoinfo.objects.get(vid = videoID)

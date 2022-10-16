@@ -1,11 +1,15 @@
 from rest_framework import serializers
 
 class videoSerializer(serializers.Serializer):
-    videoFile = serializers.FileField()
-    imageFile = serializers.FileField(required=False)
+    address = serializers.CharField()
+    image = serializers.CharField()
     name = serializers.CharField()
     mjclass=serializers.CharField()
     subclass=serializers.CharField()
+
+class testSerializer(serializers.Serializer):
+    address = serializers.CharField()
+    image = serializers.CharField()
 
 class loginSerializer(serializers.Serializer):
     ID = serializers.CharField()

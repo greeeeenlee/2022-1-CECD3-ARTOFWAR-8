@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie, csrf_exempt
 from .mixins import *
 from .auth import jwt_login,jwt_id
 from celery import chain
@@ -27,9 +27,7 @@ from celery import chain
 class my_pub_view(PublicApiMixin,APIView):
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.FileUploadParser)
     renderer_classes = (renderers.JSONRenderer,)
-    serializer_class = testSerializer
     @swagger_auto_schema(tags=["테스트"],
-                         request_body=testSerializer,
                          responses={
                              200: '성공',
                              400: '오류',
@@ -38,8 +36,7 @@ class my_pub_view(PublicApiMixin,APIView):
                          })
     def post(self, request):
         try:
-            if classify_video(request.POST['address'],request.POST['image'])==False:
-                return JsonResponse({'message' : 'fail classify video'}, status=401)
+            analysis_video('test.mp4')
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
 
@@ -54,13 +51,9 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
                          responses={
                              200: '성공',
                              400: '실패',
-                             401: '이미지 유해 판별 실패',
-                             402: 'STT 변환 및 키워드 추출 실패',
                              500: '서버에러'
                          })
     def post(self, request):
-        try: 
-<<<<<<< HEAD
             info={}
             info['uid']=jwt_id(request)
             # 전달받은 동영상 정보 저장
@@ -72,42 +65,12 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
                     info['image']=1
             else:
                 info['image']=0
-            vid=store_video(info)     #동영상 정보 mysql 저장       
+            vid=store_video.delay(info)     #동영상 정보 mysql 저장  
             # 유해 동영상 필터링 진행 및 추가 정보 업로드
-            #if classify_video(info['address'],info['image'])==False:
-                #return JsonResponse({'message' : 'fail classify video'}, status=401)
-            #if analysis_vidseo(address,vid)==False:
-                #return JsonResponse({'message' : 'fail analysis video'}, status=402)                  
- 
-=======
-            uid=jwt_id(request)
-            # 입력된 동영상과 정보 업로드
-            video = request.data.get('videoFile',None)
-            file_name = default_storage.save(video.name, video)
-            image=request.data.get('imageFile',None)
-            if image != None:
-                image_file_name = default_storage.save(image.name, image)
-            else:
-                image_file_name='None'
-
-            name = request.data.get('name',None)
-            mjclass = request.data.get('mjclass',None)
-            subclass = request.data.get('subclass',None)
-
-            address=upload_video(image_file_name,file_name)
-            vid=store_video(address,name,mjclass,subclass, uid)            
-            # 유해 동영상 필터링 진행 및 추가 정보 업로드
-            if classify_video(address,vid,image_file_name)==False:
-                return JsonResponse({'message' : 'fail classify video'}, status=401)
-            #if analysis_video(address,vid)==False:
-                #return JsonResponse({'message' : 'fail analysis video'}, status=402)                  
-            default_storage.delete(file_name)
-            default_storage.delete(image_file_name)
->>>>>>> 706eea96ab53df93094cc8f0fc440e9527d2d5a4
-        except:
-            return JsonResponse({'message' : 'fail'}, status=400)
+            classify_video.delay(info['address'],info['image'])   
+            #analysis_video.delay(info['address'])                  
+            return JsonResponse({'message' : 'SUCCESS'}, status=200)
         
-        return JsonResponse({'message' : 'SUCCESS'}, status=200)
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class signUp(PublicApiMixin,APIView):
@@ -123,6 +86,8 @@ class signUp(PublicApiMixin,APIView):
         try:
             data = json.loads(request.body)
             ID = data['ID']
+            if Userinfo.objects.filter(ID=ID).exists():
+                return JsonResponse({'message' : 'ALREADY_EXISTS'}, status=400)
             pwd = data['pwd']
             name = data['name']
             regex_pwd = '\S{8,25}'
@@ -153,6 +118,7 @@ class checkID(PublicApiMixin,APIView):
                 return JsonResponse({'message' : 'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
+
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class user(PublicApiMixin,APIView):
     @swagger_auto_schema(tags=["로그인"],
@@ -192,7 +158,7 @@ class user(PublicApiMixin,APIView):
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
-class userInfo(ApiAuthMixin,APIView):
+class changepwd(PublicApiMixin,APIView):
     @swagger_auto_schema(tags=["비밀번호 변경"],
                          request_body=changePwdSerializer,
                          responses={
@@ -200,16 +166,22 @@ class userInfo(ApiAuthMixin,APIView):
                              400: '비밀번호 검증 실패',
                              500: '서버에러'
                          })
-    def post(self, request,uid):
-        data = json.loads(request.body)
-        regex_pwd = '\S{8,25}'
-        if not re.match(regex_pwd, data['pwd']):
-            return JsonResponse({'message' : 'INVALID_PASSWORD'}, status=400)
-        pwd = data['pwd'].encode('utf-8')
-        pwd_crypt = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
-        Userinfo.objects.filter(ID = uid).update(password=pwd_crypt)
-        return JsonResponse({'message' : 'SUCCESS'}, status=200)
+    def post(self, request,*args,**kwargs):
+        try:
+            userID = jwt_id(request)
+            data = json.loads(request.body)
+            regex_pwd = '\S{8,25}'
+            if not re.match(regex_pwd, data['pwd']):
+                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status=400)
+            pwd = data['pwd'].encode('utf-8')
+            pwd_crypt = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
+            Userinfo.objects.filter(uid = userID).update(password=pwd_crypt)
+            return JsonResponse({'message' : 'SUCCESS'}, status=200)
+        except KeyError:
+            return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
 
+
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class RefreshJWTtoken(PublicApiMixin, APIView):
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refreshtoken')
@@ -255,10 +227,10 @@ class videoInfo(ApiAuthMixin,APIView):
                              403: 'Key Error',
                              500: '서버에러'
                          })
-    def get(self, request, vid):
+    def get(self, request):
         try:
             userID = jwt_id(request)
-            result = getVideoInfo(vid)
+            result = getVideoList(userID)
             return JsonResponse(result, status=200)
         except Userinfo.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_USER'}, status=401)
@@ -277,9 +249,10 @@ class videoInfo(ApiAuthMixin,APIView):
             return JsonResponse({'message' : 'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
+            
 @method_decorator(ensure_csrf_cookie, name="dispatch")
-class category(ApiAuthMixin,APIView):
-    @swagger_auto_schema(tags=["유저 이름 반환"],
+class userInfo(ApiAuthMixin,APIView):
+    @swagger_auto_schema(tags=["유저 정보 반환"],
                          responses={
                              200: '성공',
                              403: 'Key Error',
@@ -288,7 +261,7 @@ class category(ApiAuthMixin,APIView):
     def get(self, request):
         try:
             userID = jwt_id(request)
-            result = getUserName(userID)
+            result = getUserInfo(userID)
             return JsonResponse({'message' : result}, status=200)
         except Userinfo.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_USER'}, status=401)
@@ -324,6 +297,7 @@ class adminMain(SuperUserMixin,APIView):
         except Userinfo.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_USER'}, status=401)
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class deleteVideo(PublicApiMixin, APIView):
     @swagger_auto_schema(tags=["동영상 삭제 요청"],
                          responses={
@@ -341,6 +315,7 @@ class deleteVideo(PublicApiMixin, APIView):
         except Userinfo.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_USER'}, status=401)
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class createInquire(ApiAuthMixin,APIView):
     @swagger_auto_schema(tags=["동영상 문의 작성"],
                         request_body=inquireUserSerializer,
@@ -358,6 +333,7 @@ class createInquire(ApiAuthMixin,APIView):
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class inquireUser(ApiAuthMixin,APIView):
     @swagger_auto_schema(tags=["문의 내용 확인"],
                          responses={
@@ -387,6 +363,7 @@ class inquireUser(ApiAuthMixin,APIView):
             return JsonResponse({'message' : 'SUCCESS'}, status=200)
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class inquireAdmin(SuperUserMixin, APIView):
     @swagger_auto_schema(tags=["문의 내용 답변"],
                          request_body=inquireVideoSerializer,
