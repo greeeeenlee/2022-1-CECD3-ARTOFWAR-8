@@ -1,4 +1,4 @@
-from .models import Userinfo, Videoinfo
+from core.models import Userinfo, Videoinfo
 
 def getUserInfo(userID):
     user = Userinfo.objects.get(uid = userID)
@@ -33,6 +33,8 @@ def getVideoList(userID):
         result['mjclass'] = i.mjclass
         result['subclass'] = i.subclass
         result['status'] = i.status
+        result['status_detail'] = i.status_detail
+        result['image_ext'] = i.image_ext
         result['introduction'] = i.introduction
         result['storage_key'] = i.storage_key
         resultList[count]=(result)
@@ -40,15 +42,8 @@ def getVideoList(userID):
 
     return resultList
 
-
-def getVideoAddress(videoID):
-    video = Videoinfo.objects.get(vid = videoID)
-    result = video.storage_key
-
-    return result
-
-def updateVideoInfo(vid, data):
-    video = Videoinfo.objects.filter(vid = vid)
+def updateVideoInfo(storage_key,data):
+    video = Videoinfo.objects.filter(storage_key = storage_key)
     video.update(
         name=data['name'],
         introduction=data['introduction']

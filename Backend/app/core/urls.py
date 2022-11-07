@@ -1,22 +1,11 @@
 from django.urls import path ,include
-from django.contrib import admin
 from core import views
 
-app_name = 'api'
+app_name = 'core'
 
 urlpatterns = [
-    path('publish/', views.my_pub_view.as_view(), name='publish'),
-    path('sign', views.signUp.as_view(), name='signUp'),
-    path('sign/<uid>', views.checkID.as_view(), name='checkID'),
-    path('upload', views.uploadVideo.as_view(), name='uploadVideo'),
-    path('user', views.user.as_view(), name='userFunction'),
-    path('userInfo', views.userInfo.as_view(), name='userInfo'),
-    path('changepwd', views.changepwd.as_view(), name='changepwd'),
-    path('videoInfo', views.videoInfo.as_view(), name='getVideoInfo'),
-    path('deleteVideo/<vid>', views.deleteVideo.as_view(), name='deleteVideo'),
-    path('main/user', views.userMain.as_view(), name='userMain'),
-    path('main/admin', views.adminMain.as_view(), name='adminMain'),
-    path('createInquire', views.createInquire.as_view(), name='createInquire'),
-    path('inquireUser/<qid>', views.inquireUser.as_view(), name='inquireUser'),
-    path('inquireAdmin/<qid>', views.inquireAdmin.as_view(), name='inquireAdmin'),
+     path('video/', include('video.urls')),       # 동영상 관리
+     path('user/', include('manageUser.urls')),   # 유저 정보 관리
+     path('uInquire/', include('userInquire.urls')),  # 유저 문의 관리
+     path('aInquire/', include('adminInquire.urls')), # 관리자 문의 관리
 ]

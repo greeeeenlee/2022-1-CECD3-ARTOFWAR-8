@@ -47,6 +47,11 @@ INSTALLED_APPS = [
     'corsheaders',
     #myapp
     'core',
+    'swagger',
+    'video',
+    'manageUser',
+    'userInquire',
+    'adminInquire',
 ]
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

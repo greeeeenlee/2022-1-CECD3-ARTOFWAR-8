@@ -32,15 +32,14 @@ class Videoinfo(models.Model):
     mjclass = models.CharField(max_length=45, blank=True, null=True)
     subclass = models.CharField(max_length=45, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
+    status_detail = models.CharField(max_length=45, blank=True, null=True)
     image = models.IntegerField(blank=True, null=True)
+    image_ext = models.CharField(max_length=45, blank=True, null=True)
     upload_time=models.DateTimeField(auto_now=True)
     introduction = models.CharField(max_length=45, blank=True, null=True)
     storage_key = models.CharField(max_length=45, blank=True, null=True)
     storage_url = models.CharField(max_length=45, blank=True, null=True)
     uid = models.ForeignKey('userInfo', models.DO_NOTHING, db_column='uid')
-
-    def get_vid(self):
-        return self.vid
 
     class Meta:
         managed = True
