@@ -31,6 +31,7 @@ def getVideoList(userID):
         result['image_ext'] = i.image_ext
         result['introduction'] = i.introduction
         result['storage_key'] = i.storage_key
+        result['storage_url'] = i.storage_url
         resultList[count]=(result)
         count+=1
 
@@ -48,3 +49,10 @@ def updateVideoInfo(storage_key,data):
 def getVideoNum(userID):
     qs = Videoinfo.objects.filter(uid=userID) # uid에 해당하는 유저의 동영상 데이터 DB에서 추출
     return qs.count()   # 동영상 개수 반환
+
+
+#   동영상 썸네일 여부 반환
+def getImage(storage_key):
+    video = Videoinfo.objects.get(storage_key=storage_key) # storage_key에 해당하는 유저의 동영상 데이터 DB에서 추출
+    return video.name   # 동영상 썸네일 여부 반환
+   

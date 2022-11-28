@@ -10,4 +10,5 @@ urlpatterns = [
     path('log', views.log.as_view(), name='log'),
     path('getInfo', views.getInfo.as_view(), name='getInfo'),
     path('changepwd', views.changepwd.as_view(), name='changepwd'),
+    path('refresh', views.RefreshJWTtoken.as_view(), name='RefreshJWTtoken'),
 ]
