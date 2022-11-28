@@ -51,7 +51,7 @@ class manageInquire(PublicApiMixin,APIView):
 
 #   문의 삭제
 @method_decorator(ensure_csrf_cookie, name="dispatch")
-class deleteInquire(PublicApiMixin,APIView):
+class deleteUserInquire(PublicApiMixin,APIView):
     def get(self, request, qid):
         try:
             deleteInquire(qid)  #qid에 해당하는 문의 삭제

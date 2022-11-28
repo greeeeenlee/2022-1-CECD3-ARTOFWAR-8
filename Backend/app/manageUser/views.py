@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from rest_framework.response import Response
 from rest_framework.views import APIView
 import json
 from .getInfo import *
@@ -45,7 +46,7 @@ class log(PublicApiMixin,APIView):
     def get(self, request):
         try:
             response = JsonResponse({ "message": "Logout success"}, status=200)
-            response.delete_cookie('refreshtoken')  #로그아웃
+            response.delete_cookie('refreshtoken')  #cookie의 refresh_token을 삭제 - 로그아웃
             return response
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=403)
@@ -72,3 +73,26 @@ class getInfo(ApiAuthMixin,APIView):
             return JsonResponse({'message' : result}, status=200)
         except Userinfo.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_USER'}, status=401)
+
+#access token 추가 발급
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class RefreshJWTtoken(PublicApiMixin, APIView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refreshtoken') # 쿠키에서 refresh token을 추출
+        
+        if refresh_token is None:
+            return JsonResponse({"message": "Authentication credentials were not provided." }, status=403)
+        
+        try:
+            payload = jwt.decode(refresh_token, settings.REFRESH_TOKEN_SECRET, algorithms=settings.ALGORITHM)  #refresh_token decode
+        except:
+            return JsonResponse({"message": "expired refresh token, please login again."}, status=403)
+        
+        user = Userinfo.objects.filter(uid=payload['uid']).first() #유저 DB에서 uid에 맞는 데이터 추출
+        
+        if user is None: # 유저 데이터가 존재하지않을 경우 오류 발생
+            return JsonResponse({"message": "user not found" }, status=400)
+        
+        access_token = generate_access_token(user) # access_token 새로 발급
+        
+        return JsonResponse( {'access_token': access_token } ) #access_token 전달

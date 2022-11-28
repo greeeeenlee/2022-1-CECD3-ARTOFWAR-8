@@ -20,11 +20,11 @@ class getAdminInquireList(SuperUserMixin,APIView):
 
 #   문의 내용 답변 & 문의 내용 확인
 @method_decorator(ensure_csrf_cookie, name="dispatch")
-class manageAInquire(SuperUserMixin, APIView):
+class manageAInquire(PublicApiMixin, APIView):
     def patch(self, request,qid):
         try:
             data = json.loads(request.body)
-            answerInquire(qid)  #   qid에 해당하는 문의 내용 답변 DB 반영
+            answerInquire(qid,data)  #   qid에 해당하는 문의 내용 답변 DB 반영
             return JsonResponse({'message' : 'SUCCESS'}, status=201)
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
