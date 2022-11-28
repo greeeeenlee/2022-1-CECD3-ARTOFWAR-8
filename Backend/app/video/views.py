@@ -42,7 +42,7 @@ class uploadVideo(PublicApiMixin,GenericAPIView):
 class deleteVideo(PublicApiMixin, APIView):
     def get(self, request, storage_key):
         try:
-            delete_s3_video.delay(storage_key) # S3 스토리지 동영상 삭제 - 비동기 처리
+            delete_s3_video(storage_key) # S3 스토리지 동영상 삭제 - 비동기 처리
             delete_video(storage_key)   #   DB 동영상 정보 삭제
             return JsonResponse({'message' : 'SUCCESS'}, status=200)
         except Userinfo.DoesNotExist:
@@ -80,3 +80,13 @@ class getNum(PublicApiMixin,APIView):
             return JsonResponse({'message' : result}, status=200)
         except Userinfo.DoesNotExist:
             return JsonResponse({'message' : 'INVALID_USER'}, status=401)
+
+#판별 요청 재전송
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class resendClassify(PublicApiMixin,APIView):
+    def get(self, request,storage_key):
+        image=getImage(storage_key)
+        # 유해 동영상 필터링 진행 및 추가 정보 업로드 - 비동기 처리
+        #classify_video.delay(storage_key,image)   # 유해 동영상 필터링 - 이미지 진행
+        #analysis_video.delay(storage_key)   # 유해 동영상 필터링 - 음성 진행 + 주요 단어 키워드와 소개문 작성
+        return JsonResponse({'message' : 'SUCCESS'}, status=200)
