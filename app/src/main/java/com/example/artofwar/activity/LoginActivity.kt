@@ -1,0 +1,109 @@
+package com.example.artofwar.activity
+
+import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Paint
+import android.hardware.input.InputManager
+import android.os.Bundle
+import android.preference.PreferenceManager
+import android.util.Log
+import android.view.KeyEvent
+import androidx.appcompat.app.AppCompatActivity
+import com.example.artofwar.R
+import kotlinx.android.synthetic.main.activity_login.*
+import retrofit2.Call
+import retrofit2.Response
+
+class LoginActivity :AppCompatActivity() {
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor:SharedPreferences.Editor
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        //버튼에 밑줄 넣기
+        bt_register.paintFlags= bt_register.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        bt_register.text=getString(R.string.underlined_text)
+
+        //엔터키 입력 이벤트
+
+        //로그인 버튼을 클릭한 경우
+        bt_login.setOnClickListener{
+            //아이디나 비밀번호를 입력하지 않은 상태에서 로그인 버튼을 클릭한 경우
+            if(et_id.text.toString().isEmpty() || et_pw.text.toString().isEmpty()){
+                val dialog=Alert_Dialog(this)
+                dialog.showDialog(5)
+            }
+
+
+            val userData=LoginRequestBody(
+                et_id.text.toString(),
+                et_pw.text.toString()
+            )
+            val service=RegisterRequest.RetrofitAPI2.emgMedService
+            service.loginUserByEnqueue(userData)
+                .enqueue(object:retrofit2.Callback<LoginResponseBody>{
+                    override fun onResponse(
+                        call: Call<LoginResponseBody>,
+                        response: Response<LoginResponseBody>
+                    ) {
+                        //status에 따른 alert 메세지 출력
+                        when(response.code().toString()){
+                            "200"->{
+                                //TODO : 자동로그인
+                                sharedPreferences=getSharedPreferences("other",0)
+                                editor=sharedPreferences.edit()
+                                editor.putString("id",et_id.text.toString())
+                                editor.putString("pw",et_pw.text.toString())
+                                editor.apply()
+
+
+                                //관리자 아이디는 admin
+                                if(et_id.text.toString()=="admin"){
+                                    val intent=Intent(this@LoginActivity, Admin_MainActivity::class.java)
+                                    intent.putExtra("access_token","jwt "+response.body()?.access_token.toString())
+                                    startActivity(intent)
+                                }
+                                else{
+                                    val intent=Intent(this@LoginActivity, MainActivity::class.java)
+                                    intent.putExtra("access_token","jwt "+response.body()?.access_token.toString())
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    startActivity(intent)
+                                    finish()
+                                }
+
+                            }
+                            "400"->{
+                                val dialog=Alert_Dialog(this@LoginActivity)
+                                dialog.showDialog(9)
+                            }
+                            "401"->{
+                                val dialog=Alert_Dialog(this@LoginActivity)
+                                dialog.showDialog(10)
+                            }
+                            "500"->{
+                                val dialog=Alert_Dialog(this@LoginActivity)
+                                dialog.showDialog(11)
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<LoginResponseBody>, t: Throwable) {
+                        Log.d("LOG_fail",t.message.toString())
+                    }
+                })
+
+
+        }
+
+
+        //회원가입하기 버튼을 클릭한 경우
+        bt_register.setOnClickListener{
+            val intent1=Intent(this,RegisterActivity::class.java)
+            startActivity(intent1)
+        }
+
+    }
+}
