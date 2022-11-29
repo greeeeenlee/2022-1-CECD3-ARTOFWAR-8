@@ -24,6 +24,11 @@ services:
 
   redis2:
     container_name: redis_for_broker
+    healthcheck:
+        test: "redis-cli -h 127.0.0.1 ping"            
+        interval: 3s
+        timeout: 1s
+        retries: 5
     image: redis:alpine
     networks:
       - app_tier
@@ -35,7 +40,7 @@ services:
       - app_tier
     build:
       context: .
-    command: celery -A app worker -l info
+    command: celery -A app worker --loglevel=info
     volumes:
       - ./app:/app
     env_file:

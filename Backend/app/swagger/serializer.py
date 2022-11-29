@@ -1,11 +1,16 @@
 from rest_framework import serializers
 
 class videoSerializer(serializers.Serializer):
-    videoFile = serializers.FileField()
-    imageFile = serializers.FileField(required=False)
+    address = serializers.CharField()
+    image = serializers.CharField()
+    image_ext = serializers.CharField()
     name = serializers.CharField()
     mjclass=serializers.CharField()
     subclass=serializers.CharField()
+
+class testSerializer(serializers.Serializer):
+    address = serializers.CharField()
+    image = serializers.CharField()
 
 class loginSerializer(serializers.Serializer):
     ID = serializers.CharField()
@@ -20,7 +25,6 @@ class changePwdSerializer(serializers.Serializer):
     pwd = serializers.CharField()
 
 class inquireUserSerializer(serializers.Serializer):
-    vid=serializers.IntegerField()
     name = serializers.CharField()
     content = serializers.CharField()
 
