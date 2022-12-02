@@ -26,16 +26,13 @@ class VideoDetailActivity : AppCompatActivity() {
         val video=intent.getSerializableExtra("VideoInfo") as UserVideo
         var isJudged=false
 
-        Log.d("LOG_test_uploadtime",video.upload_time.toString())
         val video_uploadtime=timetoString(video.upload_time.toString()) //비디오 업로드 시간
-        Log.d("LOG_test_timestring",video_uploadtime)
-
+        
         //현재 날짜와 시간
         val currentTime=System.currentTimeMillis()
         val sdf= SimpleDateFormat("yyyyMMddHHmmss")
         val nowtime=sdf.format(currentTime)
-        Log.d("LOG_test_nowtime",nowtime)
-
+        //Log.d("LOG_test_nowtime",nowtime)
 
         //카테고리 버튼을 클릭하는 경우
         imgbtn_category.setOnClickListener {
@@ -46,14 +43,6 @@ class VideoDetailActivity : AppCompatActivity() {
 
         tv_title.text=video.name.toString()
         tv_category.text=video.mjclass.toString()+" / "+video.subclass.toString()
-
-        //소개문 작성이 안된 경우
-        if(video.introduction=="null"){
-            tv_description.text="소개문 작문이 진행중입니다."
-        }
-        else{
-            tv_description.text=video.introduction
-        }
 
         //비디오 유해성 판단 결과 (유해함, 유해하지 않음)에 따라 문의하기 버튼을 출력
         //0: 중립, 1: 이미지 유해, 2:음성유해, 3: 판단중
@@ -99,6 +88,20 @@ class VideoDetailActivity : AppCompatActivity() {
                 tv_result.text="유해 심각 동영상"
                 bt_inquire.setVisibility(View.VISIBLE)
             }
+        }
+        
+        
+        //소개문 작성이 안된 경우-동영상 유해성 판단이 진행이 안된 경우 or 유해한 동영상이라고 판단된 경우
+        if(video.introduction=="null"){
+            if(isJudged==false){//동영상 유해성 판단이 진행이 안된 경우
+                tv_description.text="소개문 작문이 진행중입니다."
+            }
+            else{//동영상 판단이 진행되었고, 소개문이 작성 안된 경우->유해한 동영상
+                tv_description.text="유해한 동영상으로 판단되어 소개문 작문이 진행되지 않습니다."
+            }
+        }
+        else{
+            tv_description.text=video.introduction
         }
 
         //뒤로가기 버튼을 클릭시
