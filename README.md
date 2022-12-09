@@ -30,6 +30,9 @@
 <img src="https://user-images.githubusercontent.com/45120083/174442306-d6cdc822-1c67-482c-b6c5-b4f3d0761a36.png" width="770"/>
 <img src="https://user-images.githubusercontent.com/45120083/174441514-23a655d2-1c0a-46cb-a8d6-39ad297a285d.png" width="770" height="270"/>
 
+### 주요 단어 추출 및 유해 단어 필터링
+
+
 ## 문의
 고가현 gahyun0527@dgu.ac.kr \
 이초록 dlchfhr1211@naver.com \
