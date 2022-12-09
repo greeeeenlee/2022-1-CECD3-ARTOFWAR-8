@@ -42,6 +42,6 @@
 
 ## 문의
 고가현 gahyun0527@dgu.ac.kr \
-이초록 dlchfhr1211@naver.com \
+이초록 dlchfhr1211@dgu.ac.kr \
 박지은 5656jieun@dgu.ac.kr \
 진하빈 2019112005@dgu.ac.kr
