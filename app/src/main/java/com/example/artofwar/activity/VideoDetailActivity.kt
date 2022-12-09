@@ -101,7 +101,8 @@ class VideoDetailActivity : AppCompatActivity() {
             }
         }
         else{
-            tv_description.text=video.introduction
+            video.introduction=add_n(video.introduction.toString())
+            tv_description.text=add_n(video.introduction.toString())
         }
 
         //뒤로가기 버튼을 클릭시
@@ -185,6 +186,13 @@ class VideoDetailActivity : AppCompatActivity() {
         result=result.replace(" ","")
 
 
+        return result
+    }
+    
+    //소개문 줄바꿈 표현하는 함수
+    private fun add_n(introduction:String):String{
+        var result=introduction
+        result=introduction.replace("n","\n")
         return result
     }
 }
